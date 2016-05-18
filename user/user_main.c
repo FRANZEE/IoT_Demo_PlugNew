@@ -12,6 +12,8 @@
 #include "osapi.h"
 #include "user_interface.h"
 
+#include "user_devicefind.h"
+
 void user_rf_pre_init(void){}
 
 
@@ -25,15 +27,17 @@ void user_rf_pre_init(void){}
 void user_init(void)
 {
 #if DEBUG_MODE
+    os_printf(" \n");
+#endif
+
+#if DEBUG_MODE
     os_printf("SDK version is :%s\n", system_get_sdk_version());
 #endif
+
     /*Establish a udp socket to receive local device detect info.*/
     /*Listen to the port 1025, as well as udp broadcast.
-    /*If receive a string of device_find_request, it rely its IP address and MAC.*/
-    //user_devicefind_init();
-
-    /*Establish a TCP server for http(with JSON) POST or GET command to communicate with the device.*/
-    /*You can find the command in "2B-SDK-Espressif IoT Demo.pdf" to see the details.*/
+	/*If receive a string of device_find_request, it rely its IP address and MAC.*/
+    user_devicefind_init();
 
 
 }
