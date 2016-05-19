@@ -34,11 +34,6 @@ void user_init(void)
     os_printf("SDK version is :%s\n", system_get_sdk_version());
 #endif
 
-    /*Establish a udp socket to receive local device detect info.*/
-    /*Listen to the port 1025, as well as udp broadcast.
-	/*If receive a string of device_find_request, it rely its IP address and MAC.*/
-    user_devicefind_init();
-
 
 }
 

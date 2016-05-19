@@ -117,7 +117,7 @@ json_ws_send(struct jsontree_value *tree, const char *path, char *pbuf)
     pos = 0;
     size = jsonSize;
 
-    json.values[0] = (struct jsontree_value *)tree;
+    json.values[0] = (struct jsontree_value *)tree; //
     jsontree_reset(&json);
     find_json_path(&json, path);
     json.path = json.depth;
