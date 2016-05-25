@@ -12,11 +12,7 @@
 #include "osapi.h"
 #include "user_interface.h"
 
-#include "user_devicefind.h"
-
 void user_rf_pre_init(void){}
-
-
 
 /******************************************************************************
  * FunctionName : user_init
