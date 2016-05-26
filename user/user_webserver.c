@@ -37,26 +37,29 @@ struct bss_info *bss_head;
 //LOCAL os_timer_t app_upgrade_10s; // timers
 //LOCAL os_timer_t upgrade_check_timer;
 
-LOCAL int ICACHE_FLASH_ATTR
-connect_status_get(struct jsontree_context *js_ctx)
-{
-    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+//LOCAL int ICACHE_FLASH_ATTR
+//connect_status_get(struct jsontree_context *js_ctx)
+//{
+//#if DEBUG_MODE
+//    os_printf("\n start of connect_status_get \n");
+//#endif
+//    const char *path = jsontree_path_name(js_ctx, js_ctx->depth - 1);
+//
+//    if (os_strncmp(path, "status", 8) == 0) {
+//        jsontree_write_int(js_ctx, user_esp_platform_get_connect_status());
+//    }
+//
+//    return 0;
+//#if DEBUG_MODE
+//    os_printf("\n end of connect_status_get \n");
+//#endif
+//}
 
-    if (os_strncmp(path, "status", 8) == 0) {
-        jsontree_write_int(js_ctx, user_esp_platform_get_connect_status());
-    }
+//LOCAL struct jsontree_callback connect_status_callback = JSONTREE_CALLBACK(connect_status_get, NULL);
 
-    return 0;
-}
+//JSONTREE_OBJECT(status_sub_tree, JSONTREE_PAIR("status", &connect_status_callback));
 
-LOCAL struct jsontree_callback connect_status_callback =
-    JSONTREE_CALLBACK(connect_status_get, NULL);
-
-JSONTREE_OBJECT(status_sub_tree,
-                JSONTREE_PAIR("status", &connect_status_callback));
-
-JSONTREE_OBJECT(connect_status_tree,
-                JSONTREE_PAIR("Status", &status_sub_tree));
+//JSONTREE_OBJECT(connect_status_tree, JSONTREE_PAIR("Status", &status_sub_tree));
 
 
 //#if PLUG_DEVICE
@@ -69,6 +72,9 @@ JSONTREE_OBJECT(connect_status_tree,
 LOCAL int ICACHE_FLASH_ATTR
 status_get(struct jsontree_context *js_ctx)
 {
+#if DEBUG_MODE
+    os_printf("\n start of status_get \n");
+#endif
     if (user_plug_get_status() == 1) {
         jsontree_write_int(js_ctx, 1);
     } else {
@@ -76,6 +82,9 @@ status_get(struct jsontree_context *js_ctx)
     }
 
     return 0;
+#if DEBUG_MODE
+    os_printf("\n end of status_get \n");
+#endif
 }
 
 
@@ -89,6 +98,9 @@ status_get(struct jsontree_context *js_ctx)
 LOCAL int ICACHE_FLASH_ATTR
 status_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
 {
+#if DEBUG_MODE
+    os_printf("\n start of status_set \n");
+#endif
     int type;
 
     while ((type = jsonparse_next(parser)) != 0) {
@@ -98,12 +110,18 @@ status_set(struct jsontree_context *js_ctx, struct jsonparse_state *parser)
                 jsonparse_next(parser);
                 jsonparse_next(parser);
                 status = jsonparse_get_value_as_int(parser);
-                user_plug_set_status(status);
+                //user_plug_set_status(status);
+#if DEBUG_MODE
+    os_printf("\n Status is set! \n");
+#endif
             }
         }
     }
 
     return 0;
+#if DEBUG_MODE
+    os_printf("\n end of status_set \n");
+#endif
 }
 
 LOCAL struct jsontree_callback status_callback =
@@ -127,6 +145,9 @@ JSONTREE_OBJECT(StatusTree,
 LOCAL void ICACHE_FLASH_ATTR
 parse_url(char *precv, URL_Frame *purl_frame)
 {
+#if DEBUG_MODE
+    os_printf("\n start of parse_url \n");
+#endif
     char *str = NULL;
     uint8 length = 0;
     char *pbuffer = NULL;
@@ -188,6 +209,9 @@ parse_url(char *precv, URL_Frame *purl_frame)
     } else {
         return;
     }
+#if DEBUG_MODE
+    os_printf("\n end of parse_url \n");
+#endif
 }
 
 LOCAL char *precvbuffer;
@@ -195,6 +219,9 @@ static uint32 dat_sumlength = 0;
 LOCAL bool ICACHE_FLASH_ATTR
 save_data(char *precv, uint16 length)
 {
+#if DEBUG_MODE
+    os_printf("\n start of save_data \n");
+#endif
     bool flag = false;
     char length_buf[10] = {0};
     char *ptemp = NULL;
@@ -251,11 +278,17 @@ save_data(char *precv, uint16 length)
     } else {
         return false;
     }
+#if DEBUG_MODE
+    os_printf("\n end of save_data \n");
+#endif
 }
 
 LOCAL bool ICACHE_FLASH_ATTR
 check_data(char *precv, uint16 length)
 {
+#if DEBUG_MODE
+    os_printf("\n start of check_data \n");
+#endif
         //bool flag = true;
     char length_buf[10] = {0};
     char *ptemp = NULL;
@@ -280,7 +313,7 @@ check_data(char *precv, uint16 length)
             if (tmp_precvbuffer != NULL){
                 os_memcpy(length_buf, pdata, tmp_precvbuffer - pdata);
                 dat_sumlength = atoi(length_buf);
-                os_printf("A_dat:%u,tot:%u,lenght:%u\n",dat_sumlength,tmp_totallength,tmp_length);
+                os_printf("A_dat:%u,tot:%u,length:%u\n",dat_sumlength,tmp_totallength,tmp_length);
                 if(dat_sumlength != tmp_totallength){
                     return false;
                 }
@@ -288,6 +321,9 @@ check_data(char *precv, uint16 length)
         }
     }
     return true;
+#if DEBUG_MODE
+    os_printf("\n end of check_data \n");
+#endif
 }
 
 LOCAL os_timer_t *restart_10ms;
@@ -302,6 +338,9 @@ LOCAL rst_parm *rstparm;
 LOCAL void ICACHE_FLASH_ATTR
 restart_10ms_cb(void *arg)
 {
+#if DEBUG_MODE
+    os_printf("\n start of restart_10ms_cb \n");
+#endif
     if (rstparm != NULL && rstparm->pespconn != NULL) {
         switch (rstparm->parmtype) {
             case WIFI:
@@ -350,6 +389,9 @@ restart_10ms_cb(void *arg)
                 break;
         }
     }
+#if DEBUG_MODE
+    os_printf("\n end of restart_10ms_cb \n");
+#endif
 }
 
 /******************************************************************************
@@ -363,6 +405,9 @@ restart_10ms_cb(void *arg)
 LOCAL void ICACHE_FLASH_ATTR
 data_send(void *arg, bool responseOK, char *psend)
 {
+#if DEBUG_MODE
+    os_printf("\n start of data_send \n");
+#endif
     uint16 length = 0;
     char *pbuf = NULL;
     char httphead[256];
@@ -404,6 +449,9 @@ data_send(void *arg, bool responseOK, char *psend)
         os_free(pbuf);
         pbuf = NULL;
     }
+#if DEBUG_MODE
+    os_printf("\n end of data_send \n");
+#endif
 }
 
 /******************************************************************************
@@ -416,6 +464,9 @@ data_send(void *arg, bool responseOK, char *psend)
 LOCAL void ICACHE_FLASH_ATTR
 json_send(void *arg, ParmType ParmType)
 {
+#if DEBUG_MODE
+    os_printf("\n start of json_send \n");
+#endif
     char *pbuf = NULL; //
     pbuf = (char *)os_zalloc(jsonSize); //переменной pbuf передаем указатель на адрес выделенной памяти размера jsonsize
     struct espconn *ptrespconn = arg; //
@@ -434,6 +485,9 @@ json_send(void *arg, ParmType ParmType)
     data_send(ptrespconn, true, pbuf);
     os_free(pbuf);
     pbuf = NULL;
+#if DEBUG_MODE
+    os_printf("\n end of json_send \n");
+#endif
 }
 
 /******************************************************************************
@@ -446,9 +500,15 @@ json_send(void *arg, ParmType ParmType)
 LOCAL void ICACHE_FLASH_ATTR
 response_send(void *arg, bool responseOK)
 {
+#if DEBUG_MODE
+    os_printf("\n start of response_send \n");
+#endif
     struct espconn *ptrespconn = arg;
 
     data_send(ptrespconn, responseOK, NULL);
+#if DEBUG_MODE
+    os_printf("\n end of response_send \n");
+#endif
 }
 
 /******************************************************************************
@@ -462,6 +522,9 @@ response_send(void *arg, bool responseOK)
 LOCAL void ICACHE_FLASH_ATTR
 webserver_recv(void *arg, char *pusrdata, unsigned short length)
 {
+#if DEBUG_MODE
+    os_printf("\n start of webserver_recv \n");
+#endif
     URL_Frame *pURL_Frame = NULL;
     char *pParseBuffer = NULL;
     bool parse_flag = false;
@@ -541,6 +604,10 @@ webserver_recv(void *arg, char *pusrdata, unsigned short length)
         _temp_exit:
             ;
 
+#if DEBUG_MODE
+    os_printf("\n end of webserver_recv \n");
+#endif
+
 }
 
 /******************************************************************************
@@ -552,11 +619,17 @@ webserver_recv(void *arg, char *pusrdata, unsigned short length)
 LOCAL ICACHE_FLASH_ATTR
 void webserver_recon(void *arg, sint8 err)
 {
+#if DEBUG_MODE
+    os_printf("\n start of webserver_recon \n");
+#endif
     struct espconn *pesp_conn = arg;
 
     os_printf("webserver's %d.%d.%d.%d:%d err %d reconnect\n", pesp_conn->proto.tcp->remote_ip[0],
     		pesp_conn->proto.tcp->remote_ip[1],pesp_conn->proto.tcp->remote_ip[2],
     		pesp_conn->proto.tcp->remote_ip[3],pesp_conn->proto.tcp->remote_port, err);
+#if DEBUG_MODE
+    os_printf("\n end of webserver_recon \n");
+#endif
 }
 
 /******************************************************************************
@@ -568,11 +641,17 @@ void webserver_recon(void *arg, sint8 err)
 LOCAL ICACHE_FLASH_ATTR
 void webserver_discon(void *arg)
 {
+#if DEBUG_MODE
+    os_printf("\n start of webserver_discon \n");
+#endif
     struct espconn *pesp_conn = arg;
 
     os_printf("webserver's %d.%d.%d.%d:%d disconnect\n", pesp_conn->proto.tcp->remote_ip[0],
         		pesp_conn->proto.tcp->remote_ip[1],pesp_conn->proto.tcp->remote_ip[2],
         		pesp_conn->proto.tcp->remote_ip[3],pesp_conn->proto.tcp->remote_port);
+#if DEBUG_MODE
+    os_printf("\n end of webserver_discon \n");
+#endif
 }
 
 /******************************************************************************
@@ -584,11 +663,17 @@ void webserver_discon(void *arg)
 LOCAL void ICACHE_FLASH_ATTR
 webserver_listen(void *arg) // с любым типом аргумент *arg
 {
+#if DEBUG_MODE
+    os_printf("\n start of webserver_listen \n");
+#endif
     struct espconn *pesp_conn = arg; // структура типа espconn указатель на адрес pesp_conn равна аргументу
 
     espconn_regist_recvcb(pesp_conn, webserver_recv); // регистрируем необходимые колбеки - // функция обработки принятия данных
     espconn_regist_reconcb(pesp_conn, webserver_recon); // функция обработки реконнекта
     espconn_regist_disconcb(pesp_conn, webserver_discon); // функция обработки дисконнекта
+#if DEBUG_MODE
+    os_printf("\n end of webserver_listen \n");
+#endif
 }
 
 /******************************************************************************
@@ -600,6 +685,9 @@ webserver_listen(void *arg) // с любым типом аргумент *arg
 void ICACHE_FLASH_ATTR
 user_webserver_init(uint32 port)
 {
+#if DEBUG_MODE
+    os_printf("\n start of user_webserver_init \n");
+#endif
     LOCAL struct espconn esp_conn; // создается объект esp_conn
     LOCAL esp_tcp esptcp; // создается объект esptcp
 
@@ -610,4 +698,7 @@ user_webserver_init(uint32 port)
     espconn_regist_connectcb(&esp_conn, webserver_listen); // espconn_regist_connectcb - Register a connected callback which will be called under successful TCP connection
     espconn_accept(&esp_conn);
 
+#if DEBUG_MODE
+    os_printf("\n end of user_webserver_init \n");
+#endif
 }
